@@ -58,11 +58,11 @@ def metrics(zipped_list):
 from sklearn.ensemble import RandomForestClassifier
 
 def run_random_forest(train, test, target, n):
-  X = up_drop_column(train, 'adopted')
-  y = up_get_column(train,'adopted')
+  X = up_drop_column(train, target)
+  y = up_get_column(train, target)
 
-  k_feature_table = up_drop_column(test, 'adopted')
-  k_actuals = up_get_column(test, 'adopted')
+  k_feature_table = up_drop_column(test, target)
+  k_actuals = up_get_column(test, target)
 
   clf = RandomForestClassifier(n, max_depth=2, random_state=0)
 
@@ -93,7 +93,7 @@ def try_archs(full_table, target, architectures, thresholds):
     all_mets = []
     for threshold in thresholds:
       all_predictions = [1 if pos>threshold else 0 for neg, pos in all_results]
-      pred_act_list = up_zip_lists(all_predictions, up_get_column(test_table, 'adopted'))
+      pred_act_list = up_zip_lists(all_predictions, up_get_column(test_table, target))
 
       mets = metrics(pred_act_list)
       mets['Threshold'] = threshold
