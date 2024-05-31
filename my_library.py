@@ -54,3 +54,31 @@ def metrics(zipped_list):
 
   results = {'Precision': precision, 'Recall': recall, 'F1': f1, 'Accuracy': accuracy}
   return results
+
+from sklearn.ensemble import RandomForestClassifier
+
+def run_random_forest(train, test, target, n):
+  X = up_drop_column(train, 'adopted')
+  y = up_get_column(train,'adopted')
+
+  k_feature_table = up_drop_column(test, 'adopted')
+  k_actuals = up_get_column(test, 'adopted')
+
+  clf = RandomForestClassifier(n, max_depth=2, random_state=0)
+
+  clf.fit(X, y)
+  probs = clf.predict_proba(k_feature_table)
+  pos_probs = [p for n,p in probs]
+
+  all_mets = []
+  for t in thresholds:
+    all_predictions = [1 if pos>t else 0 for pos in pos_probs]
+    pred_act_list = up_zip_lists(all_predictions, k_actuals)
+    mets = metrics(pred_act_list)
+    mets['Threshold'] = t
+    all_mets = all_mets + [mets]
+
+  metrics_table = up_metrics_table(all_mets)
+  metrics_table
+
+  return metrics_table
